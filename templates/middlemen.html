@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Available Middlemen{% endblock %}
+{% block content %}
+
+<div class="container mx-auto px-4">
+    <!-- Middlemen Table -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex items-center justify-start my-4">
+            <h2 class="text-xl font-semibold p-2">Middlemen</h2>
+                <a href="{{ url_for('add_middleman') }}" class="bg-gray-800 p-2 rounded-md hover:bg-gray-700">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white">
+                      
+                      <path d="M17 10H20M23 10H20M20 10V7M20 10V13" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <!-- Plus sign in white -->
+                      <path d="M1 20V19C1 15.134 4.13401 12 8 12V12C11.866 12 15 15.134 15 19V20" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <!-- Person icon -->
+                      <path d="M8 12C10.2091 12 12 10.2091 12 8C12 5.79086 10.2091 4 8 4C5.79086 4 4 5.79086 4 8C4 10.2091 5.79086 12 8 12Z" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <!-- Diamond icon -->
+                    </svg>
+                </a>
+            
+        </div>
+        <table id="middlemenTable" class="stripe hover w-full">
+            <thead>
+                <tr>
+                    <th class="text-center">ID</th>
+                    <th class="text-center">Name</th>
+                    <th class="text-center">Contact</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for middleman in middlemen %}
+                <tr>
+                    <td class="text-center">{{ middleman.id }}</td>
+                    <td class="text-center">{{ middleman.name }}</td>
+                    <td class="text-center">{{ middleman.contact_info }}</td>
+                    <td class="text-center action-buttons">
+                        
+                        
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#middlemenTable').DataTable({
+            responsive: true
+        }).columns.adjust().responsive.recalc();
+    });
+
+    function confirmDelete() {
+        return confirm('Are you sure you want to delete this item?');
+    }
+</script>
+{% endblock %}
+{% endblock %}

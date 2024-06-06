@@ -1,0 +1,43 @@
+<!-- templates/return_or_sell.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-2xl font-semibold mb-4">Return or Sell Gem</h1>
+  <form method="post" id="return-sell-form" class="bg-white p-6 rounded-lg shadow-md">
+    <div class="mb-4">
+      <label for="date_returned_or_sold" class="block text-gray-700 font-bold mb-2">Date Returned or Sold:</label>
+      <input type="date" id="date_returned_or_sold" name="date_returned_or_sold" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
+    </div>
+    <div class="flex items-center mb-4">
+      <button type="button" id="return-button" name="action" value="return" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 mr-2">Return</button>
+      <button type="button" id="sell-button" name="action" value="sell" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 mr-2">Sell</button>
+    </div>
+    <div id="sold-price-input" style="display: none;">
+      <label for="sold_price" class="block text-gray-700 font-bold mb-2">Sold Price:</label>
+      <input type="number" step="0.01" id="sold_price" name="sold_price" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 mb-4">
+      <button type="button" id="confirm-sell-button" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500">Confirm Sell</button>
+    </div>
+    <input type="hidden" id="action-input" name="action">
+  </form>
+</div>
+<script>
+  document.getElementById('sell-button').addEventListener('click', function() {
+    document.getElementById('sold-price-input').style.display = 'block';
+    document.getElementById('action-input').value = 'sell';
+  });
+
+  document.getElementById('confirm-sell-button').addEventListener('click', function() {
+    if (!document.getElementById('sold_price').value) {
+      alert('Please enter the sold price.');
+    } else {
+      document.getElementById('return-sell-form').submit();
+    }
+  });
+
+  document.getElementById('return-button').addEventListener('click', function() {
+    document.getElementById('sold-price-input').style.display = 'none';
+    document.getElementById('action-input').value = 'return';
+    document.getElementById('return-sell-form').submit();
+  });
+</script>
+{% endblock %}

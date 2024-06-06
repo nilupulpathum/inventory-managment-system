@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Generate Reports{% endblock %}
+{% block content %}
+<div class="container mx-auto my-8">
+    <h1 class="text-3xl font-bold mb-4">Generate {{ report_type.capitalize() }} Report</h1>
+    <form method="POST" action="{{ url_for('generate_report', report_type=report_type) }}" class="bg-white p-6 rounded-lg shadow-lg">
+        <div class="mb-4">
+            <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
+            <input type="date" id="start_date" name="start_date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+        </div>
+        <div class="mb-4">
+            <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
+            <input type="date" id="end_date" name="end_date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+        </div>
+        <!-- 
+        <div class="mb-4">
+            <label for="sort_by" class="block text-sm font-medium text-gray-700">Sort By</label>
+            <select id="sort_by" name="sort_by" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <option value="total_sales_made">Total Sales Made</option>
+                <option value="total_gems_sold">Total Gems Sold</option>
+                <option value="total_profit_made">Total Profit Made</option>
+            </select>
+        </div>
+         -->
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Generate</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

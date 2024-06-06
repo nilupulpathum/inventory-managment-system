@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+{% block title %}Inventory Dashboard{% endblock %}
+{% block content %}
+<div class="container mx-auto px-4 space-y-8">
+    
+        <!-- Banner -->
+        <div class="bg-cover bg-center h-64 mb-8" style="background-image: url('/static/background.jpg');">
+            <div class="h-full flex items-center justify-center text-white">
+                <h1 class="text-5xl font-bold">Dashboard</h1>
+            </div>
+        </div>
+    
+        <!-- Cards Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Total Stock Card -->
+            <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                <div class="mr-4">
+                    <svg class="h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l1.6-8H6.4L7 13zm9 6h2a2 2 0 002-2v-4H5v4a2 2 0 002 2h2m0 0v2a2 2 0 01-2 2h-2m8 0a2 2 0 002-2v-2m0 0H9"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold">Total Stock</h2>
+                    <p class="text-gray-600">{{ total_stock }}</p>
+                </div>
+            </div>
+            <!-- Sales Made Card -->
+            <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                <div class="mr-4">
+                    <svg class="h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6H5l7-5 7 5h-4v13H9zm0 0v6h6v-6H9z"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold">Sales Made</h2>
+                    <p class="text-gray-600">{{ sales_made }}</p>
+                </div>
+            </div>
+            <!-- Profit Made Card -->
+            <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                <div class="mr-4">
+                    <svg class="h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11a4 4 0 018 0m-4-4v8m0 4h.01M4 4h16M4 8h16M4 12h16M4 16h16"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold">Profit Made</h2>
+                    <p class="text-gray-600">{{ profit_made }}</p>
+                </div>
+            </div>
+        </div>
+
+
+    <!-- Inventory Table -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <div class="flex items-center justify-start my-4">
+        <h2 class="text-xl font-semibold p-2">Inventory</h2>
+        <a href="{{ url_for('add_gem') }}" class="bg-gray-800 p-2 rounded-md hover:bg-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" viewBox="0 0 293.538 293.538" fill="currentColor">
+            <g>
+                <polygon points="210.084,88.631 146.622,284.844 81.491,88.631"/>
+                <polygon points="103.7,64.035 146.658,21.08 188.515,64.035"/>
+                <polygon points="55.581,88.631 107.681,245.608 0,88.631"/>
+                <polygon points="235.929,88.631 293.538,88.631 184.521,247.548"/>
+                <polygon points="283.648,64.035 222.851,64.035 168.938,8.695 219.079,8.695"/>
+                <polygon points="67.563,8.695 124.263,8.695 68.923,64.035 7.969,64.035"/>
+            </g>
+        </svg>
+        </a>
+      </div>
+        <!-- Filter Button -->
+        <div class="relative inline-block text-left mb-4 w-full md:w-auto">
+            <button id="inventoryFilterToggle" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Filter
+                Filter
+                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <div id="inventoryFilterMenu" class="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden z-50">
+                <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="inventoryFilterToggle">
+                    <form method="post" class="px-4 py-2">
+                        <label for="filter_type_inventory" class="block text-sm">Filter by Type:</label>
+                        <select name="filter_type_inventory" id="filter_type_inventory" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">All Types</option>
+                            {% for type in gem_types %}
+                            <option value="{{ type }}">{{ type }}</option>
+                            {% endfor %}
+                        </select>
+        
+                        <label for="price_range_inventory" class="block mt-4 text-sm">Price Range:</label>
+                        <div id="price_slider" class="mt-2 text-gray-400"></div>
+                        <div class="mt-2 text-sm text-gray-700">
+                            Selected range: 
+                            <span id="min_price_display">0</span> - 
+                            <span id="max_price_display">2,500,000</span>
+                        </div>
+                        <input type="hidden" name="min_price_inventory" id="min_price_inventory">
+                        <input type="hidden" name="max_price_inventory" id="max_price_inventory">
+
+                        <label for="weight_range_inventory" class="block mt-4 text-sm">Weight Range:</label>
+                        <div id="weight_slider" class="mt-2 text-gray-400"></div>
+                        <div class="mt-2 text-sm text-gray-700">
+                            Selected range: 
+                            <span id="min_weight_display">0</span> - 
+                            <span id="max_weight_display">20</span>
+                        </div>
+                        <input type="hidden" name="min_weight_inventory" id="min_weight_inventory">
+                        <input type="hidden" name="max_weight_inventory" id="max_weight_inventory">
+        
+                        <button type="submit" class="mt-4 w-full bg-gray-800 text-white py-2 rounded-md hover:bg-gray-700">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <table id="inventoryTable" class="stripe hover w-full">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Quantity</th>
+                    <th>Weight(Ct)</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for gem in gems %}
+                <tr class="text-center">
+                    <td>{{ gem.id }}</td>
+                    <td><img src="{{ url_for('static', filename='uploads/' + gem.image_filename) }}" alt="{{ gem.name }}" class="w-16 h-16 object-cover"></td>
+                    <td>{{ gem.name }}</td>
+                    <td>{{ gem.type }}</td>
+                    <td>{{ gem.quantity }}</td>
+                    <td>{{ gem.weight }}</td>
+                    <td>{{ gem.price }}</td>
+                    <td class="action-buttons">
+                        <a href="{{ url_for('sell_gem', id=gem.id) }}" class="btn-sell text-green-600 hover:underline">Sell</a>
+                        <a href="{{ url_for('update_gem', id=gem.id) }}" class="btn-update text-blue-600 hover:underline">Update</a>
+                        <a href="{{ url_for('delete_gem', id=gem.id) }}" class="btn-delete text-red-600 hover:underline" onclick="return confirmDelete()">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Borrowed Gems Table -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <div class="flex items-center justify-start my-4">
+        <h2 class="text-xl font-semibold p-2">Borrowed Gems</h2>
+        <a href="{{ url_for('borrow_gem') }}" class="bg-gray-800 p-2 rounded-md hover:bg-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                
+                <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m-4-4h8" />
+            </svg>
+        </a>
+      </div>
+
+        <!-- Filter Button -->
+        <div class="relative inline-block text-left mb-4 w-full md:w-auto">
+            <button id="borrowedGemsFilterToggle" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Filter
+                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <div id="borrowedGemsFilterMenu" class="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden z-50">
+                <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="borrowedGemsFilterToggle">
+                    <form method="post" class="px-4 py-2">
+                        <label for="filter_status_borrowed" class="block text-sm">Filter by Status:</label>
+                        <select name="filter_status_borrowed" id="filter_status_borrowed" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">All Statuses</option>
+                            <option value="borrowed">Borrowed</option>
+                            <option value="returned">Returned</option>
+                            <option value="sold">Sold</option>
+                        </select>
+
+                        <button type="submit" class="mt-4 w-full bg-gray-800 text-white py-2 rounded-md hover:bg-gray-700">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <table id="borrowedGemsTable" class="stripe hover w-full">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Gem</th>
+                    <th>Middleman</th>
+                    <th>Date Borrowed</th>
+                    <th>Status</th>
+                    <th>Date Returned/Sold</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for borrowed_gem in borrowed_gems %}
+                <tr class="text-center">
+                    <td>{{ borrowed_gem.id }}</td>
+                    <td>{{ borrowed_gem.gem.name }} ({{ borrowed_gem.gem.type }})</td>
+                    <td>{{ borrowed_gem.middleman.name }}</td>
+                    <td>{{ borrowed_gem.date_borrowed }}</td>
+                    <td>{{ borrowed_gem.status }}</td>
+                    <td>{{ borrowed_gem.date_returned_or_sold or 'Not Returned/Sold' }}</td>
+                    <td class="action-buttons">
+                        {% if borrowed_gem.status == 'borrowed' %}
+                        <a href="{{ url_for('return_or_sell', id=borrowed_gem.id) }}" class="btn-update text-blue-600 hover:underline">Return/Sell</a>
+                        <a href="{{ url_for('delete_borrow_gem', id=borrowed_gem.id) }}" class="btn-delete text-red-600 hover:underline" onclick="return confirmDelete()">Delete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-xl font-semibold my-4">Transactions</h2>
+        <!-- Filter Button -->
+        <div class="relative inline-block text-left mb-4 w-full md:w-auto">
+            <button id="transactionsFilterToggle" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Filter
+                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <div id="transactionsFilterMenu" class="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden z-50">
+                <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="transactionsFilterToggle">
+                    <form method="post" class="px-4 py-2">
+                        <label for="min_price_transaction" class="block text-sm">Min Sold Price:</label>
+                        <input type="number" step="0.01" name="min_price_transaction" id="min_price_transaction" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+
+                        <label for="max_price_transaction" class="block mt-4 text-sm">Max Sold Price:</label>
+                        <input type="number" step="0.01" name="max_price_transaction" id="max_price_transaction" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+
+                        <button type="submit" class="mt-4 w-full bg-gray-800 text-white py-2 rounded-md hover:bg-gray-700">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <table id="transactionsTable" class="stripe hover w-full">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Gem</th>
+                    <th>Date Sold</th>
+                    <th>Bought Price</th>
+                    <th>Sold Price</th>
+                    <th>Actions</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr class="text-center">
+                    <td>{{ transaction.id }}</td>
+                    <td>{{ transaction.gem.name }} ({{ transaction.gem.type }})</td>
+                    <td>{{ transaction.date_sold }}</td>
+                    <td>{{ transaction.bought_price }}</td>
+                    <td>{{ transaction.sold_price }}</td>
+                    <td class="action-buttons">
+                     
+                      <a href="{{ url_for('delete_transaction', id=transaction.id) }}" class="btn-delete text-red-600 hover:underline" onclick="return confirmDelete()">Delete</a>
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.js" defer></script>
+<script>
+    document.getElementById('inventoryFilterToggle').addEventListener('click', function() {
+        var filterMenu = document.getElementById('inventoryFilterMenu');
+        filterMenu.classList.toggle('hidden');
+    });
+
+    document.getElementById('borrowedGemsFilterToggle').addEventListener('click', function() {
+        var filterMenu = document.getElementById('borrowedGemsFilterMenu');
+        filterMenu.classList.toggle('hidden');
+    });
+
+    document.getElementById('transactionsFilterToggle').addEventListener('click', function() {
+        var filterMenu = document.getElementById('transactionsFilterMenu');
+        filterMenu.classList.toggle('hidden');
+    });
+
+    $(document).ready(function() {
+      $('#inventoryTable').DataTable({
+          responsive: true
+      }).columns.adjust().responsive.recalc();
+    
+      $('#borrowedGemsTable').DataTable({
+          responsive: true
+      }).columns.adjust().responsive.recalc();
+    
+      $('#transactionsTable').DataTable({
+          responsive: true
+      }).columns.adjust().responsive.recalc();
+    });
+    
+    function confirmDelete() {
+      return confirm('Are you sure you want to delete this item?');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var priceSlider = document.getElementById('price_slider');
+        var weightSlider = document.getElementById('weight_slider');
+        var minPriceInput = document.getElementById('min_price_inventory');
+        var maxPriceInput = document.getElementById('max_price_inventory');
+        var minPriceDisplay = document.getElementById('min_price_display');
+        var maxPriceDisplay = document.getElementById('max_price_display');
+        var minWeightInput = document.getElementById('min_weight_inventory');
+        var maxWeightInput = document.getElementById('max_weight_inventory');
+        var minWeightDisplay = document.getElementById('min_weight_display');
+        var maxWeightDisplay = document.getElementById('max_weight_display');
+
+        noUiSlider.create(priceSlider, {
+            start: [0, 10000000],
+            connect: true,
+            range: {
+                'min': 0,
+                'max': 2500000
+            },
+            step: 1000,
+            format: {
+                to: function (value) {
+                    return Math.round(value);
+                },
+                from: function (value) {
+                    return Math.round(value);
+                }
+            }
+        });
+
+        noUiSlider.create(weightSlider, {
+            start: [0, 20],
+            connect: true,
+            range: {
+                'min': 0,
+                'max': 20
+            },
+            step: 0.1,
+            format: {
+                to: function (value) {
+                    return value;
+                },
+                from: function (value) {
+                    return value;
+                }
+            }
+        });
+
+        priceSlider.noUiSlider.on('update', function (values, handle) {
+            minPriceInput.value = values[0];
+            maxPriceInput.value = values[1];
+            minPriceDisplay.textContent = values[0];
+            maxPriceDisplay.textContent = values[1];
+        });
+
+        weightSlider.noUiSlider.on('update', function (values, handle) {
+            minWeightInput.value = values[0];
+            maxWeightInput.value = values[1];
+            minWeightDisplay.textContent = values[0];
+            maxWeightDisplay.textContent = values[1];
+        });
+    });
+    
+
+</script>
+
+
+{% endblock %}

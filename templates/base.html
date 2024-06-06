@@ -1,0 +1,83 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gems IMS{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.css">
+    
+    {% block head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-gradient-to-tr from-gray-300 to-gray-500 text-gray-900 tracking-wider leading-normal">
+    {% if current_user.is_authenticated %}
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-white text-2xl font-bold">Gem Inventory</div>
+            
+                <div class="block lg:hidden">
+                    <button id="navbar-toggle" class="text-white focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="hidden lg:flex lg:items-center lg:w-auto" id="navbar-menu">
+                    <a href="/dashboard" class="block lg:inline-block text-white mr-4">Dashboard</a>
+                    <a href="/middlemen" class="block lg:inline-block text-white mr-4">Middlemen</a>
+                    <a href="{{ url_for('reports') }}" class="text-white mr-4">Reports</a>
+                    <a href="/logout" class="block lg:inline-block text-white">Logout</a>
+                </div>
+            
+        </div>
+        <div class="lg:hidden hidden bg-gray-700" id="navbar-dropdown">
+            
+                <a href="/dashboard" class="block text-white py-2 px-4">Dashboard</a>
+                <a href="/middlemen" class="block text-white py-2 px-4">Middlemen</a>
+                <a href="{{ url_for('reports') }}" class="block text-white py-2 px-4">Reports</a>
+                <a href="/logout" class="block text-white py-2 px-4">Logout</a>
+            
+        </div>
+    </nav>
+    {% endif %}
+
+    <div class="container mx-auto px-4 mt-8">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-4">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} bg-red-500 text-white px-4 py-2 rounded mb-2">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}
+        {% endblock %}
+    </div>
+
+
+    <script>
+        document.getElementById('navbar-toggle').addEventListener('click', function () {
+            var dropdown = document.getElementById('navbar-dropdown');
+            dropdown.classList.toggle('hidden');
+        });
+    </script>
+    <!-- jQuery -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <!-- UI -->   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.js"></script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+

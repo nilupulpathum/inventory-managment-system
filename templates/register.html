@@ -1,0 +1,38 @@
+<!-- templates/register.html -->
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="flex items-center justify-center min-h-screen ">
+    <div class="w-full max-w-md p-8 space-y-8 bg-white shadow-lg rounded-lg">
+        <div>
+            <h2 class="mt-6 text-3xl font-extrabold text-center text-gray-900">Create your account</h2>
+        </div>
+        <form class="mt-8 space-y-6" method="post">
+            {{ form.hidden_tag() }}
+            <div class="rounded-md shadow-sm -space-y-px">
+                <div>
+                    {{ form.username.label(class="sr-only") }}
+                    {{ form.username(class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm", placeholder="Username") }}
+                </div>
+                <div>
+                    {{ form.password.label(class="sr-only") }}
+                    {{ form.password(class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm", placeholder="Password") }}
+                </div>
+                <div>
+                    {{ form.confirm_password.label(class="sr-only") }}
+                    {{ form.confirm_password(class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm", placeholder="Confirm Password") }}
+                </div>
+            </div>
+
+            <div>
+                {{ form.submit(class="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-gray-700 border border-transparent rounded-md group hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500") }}
+            </div>
+        </form>
+        <div class="mt-4 text-center">
+            <p class="text-sm text-gray-600">Already have an account? 
+                <a href="{{ url_for('login') }}" class="font-medium text-gray-600 hover:text-gray-500">Sign in</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

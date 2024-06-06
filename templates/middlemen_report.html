@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Middlemen Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-r from-gray-200 to-gray-300">
+    <div class="container mx-auto my-8">
+        <h1 class="text-3xl font-bold mb-4">Middlemen Report</h1>
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b-2 border-gray-200 bg-gray-100">Middleman ID</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200 bg-gray-100">Name</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200 bg-gray-100">Total Gems Borrowed</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200 bg-gray-100">Total Gems Sold</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200 bg-gray-100">Total Gems Returned</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200 bg-gray-100">Total Sales</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200 bg-gray-100">Total Profit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in report_data.sorted_by_gems_sold %}
+                <tr>
+                    <td class="py-2 px-4 border-b">{{ item.middleman_id }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.name }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.total_gems_borrowed }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.total_gems_sold }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.total_gems_returned }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.total_sales }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.total_profit }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-4">
+        </div>
+    </div>
+</body>
+</html>

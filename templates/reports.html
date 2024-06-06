@@ -1,0 +1,27 @@
+<!-- templates/reports.html -->
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+    <div class="container mx-auto my-8">
+        <h1 class="text-3xl font-bold mb-4">Reports</h1>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-2">Sales Reports</h2>
+                <p class="mb-4">Generate detailed sales reports.</p>
+                <a href="{{ url_for('generate_report', report_type='sales') }}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Generate Report</a>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-2">Inventory Reports</h2>
+                <p class="mb-4">Generate detailed inventory reports.</p>
+                <a href="{{ url_for('generate_report', report_type='inventory') }}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Generate Report</a>
+            </div>
+        <!-- <div class="bg-white p-6 rounded-lg shadow-lg">    
+                <h2 class="text-xl font-bold mb-2">Middlemen Reports</h2>
+                <p class="mb-4">Generate detailed middlemen reports.</p>
+                <a href="{{ url_for('generate_report', report_type='middlemen') }}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Generate Report</a>
+            </div> -->
+        </div>
+    </div>
+
+
+{% endblock %}
