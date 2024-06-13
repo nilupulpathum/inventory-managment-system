@@ -15,7 +15,7 @@ import tempfile
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inventory.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'static', 'uploads')
 app.secret_key = 'supersecretkey'
 
 db.init_app(app)
@@ -151,13 +151,22 @@ def add_gem():
         sold = False
 
         # Handle image upload
+        filename = 'placeholder.jpg'
         if 'image' in request.files:
             image = request.files['image']
             if image.filename == '':
                 filename = 'placeholder.jpg'
             elif image and allowed_file(image.filename):
                 filename = secure_filename(image.filename)
-                image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+                # Ensure the upload directory exists
+                if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                    print(f"Creating directory: {app.config['UPLOAD_FOLDER']}")
+                    os.makedirs(app.config['UPLOAD_FOLDER'])
+
+                print(f"Saving image to: {upload_path}")
+                image.save(upload_path)
             else:
                 flash('Invalid file format', 'danger')
                 return redirect(request.url)
@@ -180,15 +189,15 @@ def update_gem(id):
         gem.description = request.form.get('description')
         if 'image' in request.files:
             image = request.files['image']
-            if image and allowed_file(image.filename):
-                filename = secure_filename(image.filename)
-                gem.image_filename = filename
-                image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                
-            else:
-                flash('Invalid file format', 'danger')
-                return redirect(request.url)
+            
+            filename = secure_filename(image.filename)
+            
+            upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            image.save(upload_path)
+            gem.image_filename = filename    
+            
         db.session.commit()
+        print(gem.image_filename)
         return redirect(url_for('dashboard'))
     return render_template('update_gem.html', gem=gem)
 
