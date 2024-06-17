@@ -4,9 +4,16 @@ from datetime import datetime
 db = SQLAlchemy()
 
 
+def generate_next_gem_id():
+    last_gem = Gem.query.order_by(Gem.id.desc()).first()
+    if not last_gem:
+        return 'G001'
+    last_id = int(last_gem.id[1:])
+    next_id = last_id + 1
+    return f'G{next_id:03d}'
 
 class Gem(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(10), primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     type = db.Column(db.String(30), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
@@ -15,8 +22,10 @@ class Gem(db.Model):
     image_filename = db.Column(db.String(255))  # or image_url = db.Column(db.Text)
     added_date = db.Column(db.DateTime, default=db.func.current_timestamp())
     sold = db.Column(db.Boolean, default=False)
+    borrowed = db.Column(db.Boolean, default=False)
     
     def __init__(self, name, type, quantity, weight, price, image_filename, sold):
+        self.id = generate_next_gem_id()
         self.name = name
         self.type = type
         self.quantity = quantity

@@ -118,7 +118,7 @@ def dashboard():
         transactions = transactions_query.all()
             
     else:
-        gems = Gem.query.filter_by(sold=False).all()
+        gems = Gem.query.filter_by(sold=False, borrowed = False).all()
         borrowed_gems = BorrowedGem.query.all()
         transactions = Transaction.query.all()
     
@@ -171,13 +171,13 @@ def add_gem():
                 flash('Invalid file format', 'danger')
                 return redirect(request.url)
         
-        new_gem = Gem(name=name, type=gem_type, quantity=quantity, price=price, weight=weight, image_filename=filename, sold=sold)
+        new_gem = Gem( name=name, type=gem_type, quantity=quantity, price=price, weight=weight, image_filename=filename, sold=sold)
         db.session.add(new_gem)
         db.session.commit()
         return redirect(url_for('dashboard'))
     return render_template('add_gem.html')
 
-@app.route('/update_gem/<int:id>', methods=['GET', 'POST'])
+@app.route('/update_gem/<id>', methods=['GET', 'POST'])
 @login_required
 def update_gem(id):
     gem = Gem.query.get_or_404(id)
@@ -186,22 +186,32 @@ def update_gem(id):
         gem.type = request.form.get('type')
         gem.quantity = request.form.get('quantity')
         gem.price = request.form.get('price')
+        gem.weight = request.form.get('weight')
         gem.description = request.form.get('description')
         if 'image' in request.files:
             image = request.files['image']
             
-            filename = secure_filename(image.filename)
-            
-            upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            image.save(upload_path)
-            gem.image_filename = filename    
-            
+            if image and allowed_file(image.filename):
+                filename = secure_filename(image.filename)
+                upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+                # Ensure the upload directory exists
+                if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                    print(f"Creating directory: {app.config['UPLOAD_FOLDER']}")
+                    os.makedirs(app.config['UPLOAD_FOLDER'])
+
+                print(f"Saving image to: {upload_path}")
+                image.save(upload_path)
+        else:
+            flash('Invalid file format', 'danger')
+            return redirect(request.url)  
+        gem.image_filename = filename    
         db.session.commit()
         print(gem.image_filename)
         return redirect(url_for('dashboard'))
     return render_template('update_gem.html', gem=gem)
 
-@app.route('/delete_gem/<int:id>', methods=['GET'])
+@app.route('/delete_gem/<id>', methods=['GET'])
 def delete_gem(id):
     gem = Gem.query.get_or_404(id)
     db.session.delete(gem)
@@ -213,14 +223,16 @@ def delete_gem(id):
 
 @app.route('/borrow_gem', methods=['GET', 'POST'])
 def borrow_gem():
-    gems = Gem.query.filter_by(sold=False)
+    gems = Gem.query.filter_by(sold=False, borrowed=False)
     middlemen = Middleman.query.all()
 
     if request.method == 'POST':
         gem_id = request.form['gem_id']
         middleman_id = request.form['middleman_id']
         date_borrowed = datetime.strptime(request.form['date_borrowed'], '%Y-%m-%d')
-
+        
+        gem = Gem.query.get_or_404(gem_id)
+        gem.borrowed = True
         new_borrowed_gem = BorrowedGem(gem_id=gem_id, middleman_id=middleman_id, date_borrowed=date_borrowed)
         db.session.add(new_borrowed_gem)
         db.session.commit()
@@ -248,12 +260,14 @@ def return_or_sell(id):
         date_returned_or_sold = datetime.strptime(request.form['date_returned_or_sold'], '%Y-%m-%d')
         
         if action == 'return':
+            gem.borrowed = False
             borrowed_gem.status = 'returned'
             borrowed_gem.date_returned_or_sold = date_returned_or_sold
             flash('Gem marked as returned!')
             
         elif action == 'sell':
             gem.sold = True
+            gem.borrowed = False
             sold_price = float(request.form['sold_price'])
             bought_price = gem.price
             new_transaction = Transaction(gem_id=borrowed_gem.gem_id, date_sold=date_returned_or_sold, sold_price=sold_price, bought_price=bought_price)
@@ -276,7 +290,7 @@ def delete_transaction(id):
     flash('Transaction deleted successfully!')
     return redirect(url_for('dashboard'))
 
-@app.route('/sell_gem/<int:id>', methods=['GET', 'POST'])
+@app.route('/sell_gem/<id>', methods=['GET', 'POST'])
 def sell_gem(id):
     gem = Gem.query.get_or_404(id)
     if request.method == 'POST':

@@ -181,6 +181,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Gem ID</th>
                     <th>Gem</th>
                     <th>Middleman</th>
                     <th>Date Borrowed</th>
@@ -193,6 +194,7 @@
                 {% for borrowed_gem in borrowed_gems %}
                 <tr class="text-center">
                     <td>{{ borrowed_gem.id }}</td>
+                    <td>{{ borrowed_gem.gem_id }}</td>
                     <td>{{ borrowed_gem.gem.name }} ({{ borrowed_gem.gem.type }})</td>
                     <td>{{ borrowed_gem.middleman.name }}</td>
                     <td>{{ borrowed_gem.date_borrowed }}</td>
@@ -239,6 +241,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Gem ID</th>
                     <th>Gem</th>
                     <th>Date Sold</th>
                     <th>Bought Price</th>
@@ -251,6 +254,7 @@
                 {% for transaction in transactions %}
                 <tr class="text-center">
                     <td>{{ transaction.id }}</td>
+                    <td>{{ transaction.gem_id }}</td>
                     <td>{{ transaction.gem.name }} ({{ transaction.gem.type }})</td>
                     <td>{{ transaction.date_sold }}</td>
                     <td>{{ transaction.bought_price }}</td>
